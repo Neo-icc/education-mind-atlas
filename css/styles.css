@@ -447,6 +447,74 @@ h1.page-title {
 }
 .hero-actions { display: flex; gap: var(--s3); margin-top: var(--s5); flex-wrap: wrap; }
 
+/* ---------- 身份分流落地页 ---------- */
+.gate-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--s5);
+  margin: var(--s6) 0;
+}
+.gate-card {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--r4);
+  padding: var(--s6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.gate-card:hover { border-color: var(--rule-2); box-shadow: var(--shadow-2); }
+.gate-tag {
+  align-self: flex-start;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-5);
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+.gate-card h2 {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  color: var(--ink);
+  margin: 0;
+}
+.gate-lead { font-size: 0.95rem; color: var(--ink-3); line-height: 1.7; margin: 0; }
+.gate-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.gate-points li { font-size: 0.86rem; color: var(--ink-2); padding-left: 1.1rem; position: relative; }
+.gate-points li::before { content: "·"; position: absolute; left: 0.2rem; color: var(--accent); font-weight: 700; }
+.gate-actions { display: flex; gap: var(--s2); margin-top: var(--s3); flex-wrap: wrap; }
+
+/* ---------- 研究者工作台 ---------- */
+.academic-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s4);
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r3);
+  background: var(--paper-2);
+  margin-bottom: var(--s4);
+}
+.academic-input-row input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--ink);
+  font-family: var(--mono);
+  min-width: 0;
+}
+.academic-input-row input::placeholder { color: var(--ink-5); }
+.academic-results { display: flex; flex-direction: column; gap: var(--s2); }
+.export-row { display: flex; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s3); }
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -1615,13 +1683,16 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 1px; border
 /* ---------- 引用块 ---------- */
 .cite-box {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--s3);
   padding: var(--s3) var(--s4);
   background: var(--paper-2);
   border: 1px solid var(--rule);
   border-radius: var(--r2);
 }
+.cite-formats { display: flex; gap: var(--s2); }
+.cite-body { display: flex; align-items: center; gap: var(--s3); }
 .cite-box code {
   flex: 1;
   font-family: var(--mono);
@@ -1634,7 +1705,7 @@ mark { background: var(--accent-soft); color: var(--ink); padding: 0 1px; border
 /* ---------- 身份切换 ---------- */
 .aud-switch {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 2px;
   margin-top: var(--s4);
   padding: 2px;

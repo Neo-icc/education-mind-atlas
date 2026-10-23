@@ -31,6 +31,8 @@
     searchOpen: false,
     searchQ: "",
     searchType: "",
+    researchQ: "",
+    citeFmt: "plain",
   };
 
   /* ---------------- 工具 ---------------- */
@@ -101,12 +103,31 @@
   function go(hash) { location.hash = hash; }
 
   /* ---------------- 侧栏 ---------------- */
-  function sidebarHTML(active) {
-    const nav = [
+  function navGroups() {
+    if (state.audience === "researcher") {
+      return [
+        { g: "研究索引", items: [
+          ["#/", "研究索引", "overview"],
+          ["#/entries", "理论条目", "entries"],
+          ["#/glossary", "术语索引", "glossary"],
+          ["#/thinkers", "人物索引", "thinkers"],
+          ["#/network", "关联网络", "network"],
+          ["#/timeline", "观点时间轴", "timeline"],
+        ]},
+        { g: "工具", items: [
+          ["#/compare", "理论对比", "compare"],
+          ["#/path", "关联路径", "path"],
+          ["#/learning-path", "阅读路径", "learning-path"],
+          ["#/integrity", "数据自检", "integrity"],
+          ["#/methods", "方法与边界", "methods"],
+        ]},
+      ];
+    }
+    return [
       { g: "从这里开始", items: [
         ["#/start", "快速分诊", "start"],
         ["#/scenarios", "场景库", "scenarios"],
-        ["", "概览", "overview"],
+        ["#/", "概览", "overview"],
         ["#/entries", "理论条目", "entries"],
         ["#/glossary", "术语索引", "glossary"],
       ]},
@@ -123,6 +144,10 @@
         ["#/methods", "方法与边界", "methods"],
       ]},
     ];
+  }
+
+  function sidebarHTML(active) {
+    const nav = navGroups();
 
     const domainNav = S.domains.map((d) => {
       const n = S.entries.filter((e) => e.domain === d.id).length;
@@ -142,8 +167,9 @@
         <div class="aud-switch" role="group" aria-label="选择使用身份">
           <button class="aud-btn ${state.audience === "teacher" ? "on" : ""}" data-aud="teacher">我是老师</button>
           <button class="aud-btn ${state.audience === "parent" ? "on" : ""}" data-aud="parent">我是家长</button>
+          <button class="aud-btn ${state.audience === "researcher" ? "on" : ""}" data-aud="researcher">研究者</button>
         </div>
-        <div class="aud-hint">${state.audience === "teacher" ? "按课堂情境组织 · 含给教师的做法" : state.audience === "parent" ? "按年龄与家庭情境组织 · 含转介边界" : "选择身份后，全站文案与建议会随之调整"}</div>
+        <div class="aud-hint">${state.audience === "teacher" ? "按课堂情境组织 · 含给教师的做法" : state.audience === "parent" ? "按年龄与家庭情境组织 · 含转介边界" : state.audience === "researcher" ? "索引与工具 · 检索 · 图谱 · 引用 · 数据" : "选择身份后，全站文案与建议会随之调整"}</div>
       </div>
       <div class="sidebar-search">
         <button class="search-trigger" id="open-search" aria-label="打开全局搜索">
@@ -202,8 +228,223 @@
     </footer>`;
   }
 
+  /* ---------------- 落地页（未选身份） ---------------- */
+  function viewLanding() {
+    const st = S.stats;
+    const metrics = [[st.entries, "理论条目"], [st.terms, "术语卡"], [st.links, "机制关联"], [st.thinkers, "人物"]]
+      .map(([n, l]) => `<div class="metric"><span class="metric-num">${n}</span><span class="metric-label">${l}</span></div>`).join("");
+    return `
+    <section class="hero">
+      <div>
+        <span class="eyebrow">${esc(A.meta.subtitle)}</span>
+        <h1>教育与心智<br/>知识图谱</h1>
+        <p class="hero-lead">一份知识库，三种用法。老师和家长走「情境优先」拿到可执行的做法；研究者与学者走「研究索引」做检索、引用与数据。两边读的是同一套机制与证据。</p>
+      </div>
+      <div class="metric-grid">${metrics}</div>
+    </section>
+
+    <section class="gate-grid">
+      <div class="gate-card">
+        <span class="gate-tag">给家长与老师</span>
+        <h2>情境优先</h2>
+        <p class="gate-lead">先给能直接用的做法、话术与转介边界，再往下看背后的机制。</p>
+        <ul class="gate-points">
+          <li>按年龄 / 课堂情境快速分诊</li>
+          <li>「可以试 · 先别做 · 可以这样说」</li>
+          <li>2–3 条情境合并成一张 A4</li>
+        </ul>
+        <div class="gate-actions">
+          <button class="btn primary" data-aud="parent">我是家长</button>
+          <button class="btn ghost" data-aud="teacher">我是老师</button>
+        </div>
+      </div>
+      <div class="gate-card">
+        <span class="gate-tag">给研究者与学者</span>
+        <h2>研究索引</h2>
+        <p class="gate-lead">作为索引与工具：精确检索、可核验来源、引用导出与整库数据下载。</p>
+        <ul class="gate-points">
+          <li>按作者 / 年份 / DOI / 编号精确检索</li>
+          <li>BibTeX / RIS 引用导出</li>
+          <li>整库 JSON / CSV 下载</li>
+        </ul>
+        <div class="gate-actions">
+          <button class="btn primary" data-aud="researcher">进入研究索引</button>
+        </div>
+      </div>
+    </section>
+
+    <p class="graph-hint" style="margin-top:1rem">任何时候都可以通过左上角切换身份，或按 Ctrl K 全局搜索。身份不锁定，内容不复制。</p>
+    ${footHTML()}`;
+  }
+
+  /* ---------------- 研究者工作台 ---------------- */
+  function viewResearch() {
+    const st = S.stats;
+    const metrics = [[st.entries, "理论条目"], [st.terms, "术语卡"], [st.links, "机制关联"], [st.doiItems, "可核验 DOI"]]
+      .map(([n, l]) => `<div class="metric"><span class="metric-num">${n}</span><span class="metric-label">${l}</span></div>`).join("");
+    return `
+    <section class="hero">
+      <div>
+        <span class="eyebrow">研究索引 · Researcher</span>
+        <h1>索引 · 检索<br/>图谱 · 引用 · 数据</h1>
+        <p class="hero-lead">面向研究者与学者的入口。${st.entries} 个条目、${st.terms} 张术语卡、${st.links} 条机制关联，证据分级与 DOI 均可核验。</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#/entries">浏览条目</a>
+          <a class="btn ghost" href="#/network">关联网络</a>
+          <a class="btn ghost" href="#/integrity">数据自检</a>
+        </div>
+      </div>
+      <div class="metric-grid">${metrics}</div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head">
+        <span class="sec-k">Search · 学术检索</span>
+        <span class="filter-meta">按作者 / 年份 / DOI / 编号 / 英文标题</span>
+      </div>
+      <div class="academic-input-row">
+        <span aria-hidden="true">⌕</span>
+        <input id="research-input" placeholder="如 E001、皮亚杰、1999、10.1037/、Zone of proximal…" value="${esc(state.researchQ)}" autocomplete="off" />
+      </div>
+      <div class="academic-results" id="research-results"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><span class="sec-k">Export · 数据下载</span></div>
+      <div class="export-row">
+        <button class="btn ghost" data-dl="json">整库 JSON</button>
+        <button class="btn ghost" data-dl="entries-csv">条目 CSV</button>
+        <button class="btn ghost" data-dl="links-csv">关联 CSV</button>
+      </div>
+      <p class="graph-hint">从页面同一份数据实时生成，与站内计数一致；JSON 含元数据、条目（含 DOI）、术语、关联、人物与情境。</p>
+    </section>
+
+    <section class="sec">
+      <div class="sec-head"><span class="sec-k">Cite · 引用导出</span></div>
+      <p class="graph-hint">打开任意条目，底部「引用本条」提供中文引文、BibTeX 与 RIS 三种格式，可直接复制。</p>
+      <a class="btn ghost sm" href="#/entries">去条目页 →</a>
+    </section>
+    ${footHTML()}`;
+  }
+
+  function academicSearch(q) {
+    const norm = (s) => String(s == null ? "" : s).toLowerCase();
+    const query = norm(q).trim();
+    if (!query) return [];
+    const out = [];
+    const isId = /^e\d+$/.test(query);
+    const isYear = /^\d{3,4}$/.test(query);
+    const seen = new Set();
+    const push = (h) => { const k = h.href + "|" + h.kind + "|" + h.title; if (!seen.has(k)) { seen.add(k); out.push(h); } };
+
+    if (isId) {
+      const e = S.byId[query.toUpperCase()];
+      if (e) push({ kind: "entry", title: e.name, sub: e.en, meta: e.id + " · " + S.thinkerName(e.thinker) + " · " + e.year, href: "#/entry/" + e.id });
+    } else if (isYear) {
+      S.entries.forEach((e) => {
+        if (String(e.year).indexOf(query) > -1) push({ kind: "entry", title: e.name, sub: e.en, meta: S.thinkerName(e.thinker) + " · " + e.year, href: "#/entry/" + e.id });
+      });
+    } else {
+      S.entries.forEach((e) => {
+        const hitName = norm(e.name).indexOf(query) > -1;
+        const hitEn = norm(e.en).indexOf(query) > -1;
+        const hitThinker = norm(S.thinkerName(e.thinker)).indexOf(query) > -1 || norm(S.thinkerEn(e.thinker)).indexOf(query) > -1;
+        const hitDoi = e.evidence.some((ev) => ev.doi && ev.doi.toLowerCase().indexOf(query) > -1);
+        if (hitName || hitEn) push({ kind: "entry", title: e.name, sub: e.en, meta: S.thinkerName(e.thinker) + " · " + e.year, href: "#/entry/" + e.id });
+        else if (hitThinker) push({ kind: "entry", title: e.name, sub: S.thinkerName(e.thinker) + " · " + e.year, meta: e.id, href: "#/entry/" + e.id });
+        else if (hitDoi) {
+          const ev = e.evidence.find((x) => x.doi && x.doi.toLowerCase().indexOf(query) > -1);
+          push({ kind: "entry", title: e.name, sub: "DOI " + ev.doi, meta: ev.text, href: "#/entry/" + e.id });
+        }
+      });
+      S.thinkers.forEach((t) => {
+        if (norm(t.name).indexOf(query) > -1 || norm(t.en).indexOf(query) > -1) push({ kind: "thinker", title: t.name, sub: t.en, meta: t.entries.length + " 条关联条目", href: "#/thinker/" + t.id });
+      });
+      S.terms.forEach((t) => {
+        if (norm(t.t).indexOf(query) > -1 || norm(t.en).indexOf(query) > -1) push({ kind: "term", title: t.t, sub: t.en, meta: t.d, href: "#/entry/" + t.entry });
+      });
+    }
+    return out.slice(0, 40);
+  }
+
+  function renderResearchResults() {
+    const box = document.getElementById("research-results");
+    if (!box) return;
+    const q = state.researchQ.trim();
+    if (!q) {
+      box.innerHTML = `<p class="graph-hint">输入作者名、年份、DOI、条目编号或英文标题。精确检索不展开口语同义词。</p>`;
+      return;
+    }
+    const hits = academicSearch(q);
+    if (!hits.length) {
+      box.innerHTML = `<p class="graph-hint">没有精确匹配。试试完整作者名、四位年份或完整 DOI。</p>`;
+      return;
+    }
+    const groups = { entry: "条目", thinker: "人物", term: "术语" };
+    let html = "";
+    ["entry", "thinker", "term"].forEach((k) => {
+      const g = hits.filter((h) => h.kind === k);
+      if (!g.length) return;
+      html += `<div class="sr-group-label">${groups[k]} · ${g.length}</div>`;
+      html += g.map((h) => `<div class="sr-item" data-href="${h.href}">
+        <span class="sr-title">${esc(h.title)}</span>
+        <span class="sr-kind">${groups[h.kind]}</span>
+        <span class="sr-sub">${esc(h.sub || "")}${h.meta ? " · " + esc(h.meta) : ""}</span>
+      </div>`).join("");
+    });
+    box.innerHTML = html;
+    box.querySelectorAll("[data-href]").forEach((el) => {
+      el.addEventListener("click", () => go(el.dataset.href));
+    });
+  }
+
+  function csv(head, rows) {
+    const c = (v) => { const s = String(v == null ? "" : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    return [head, ...rows].map((r) => r.map(c).join(",")).join("\r\n") + "\r\n";
+  }
+
+  function buildExport(fmt) {
+    if (fmt === "json") {
+      const data = {
+        meta: A.meta, generatedAt: new Date().toISOString(), stats: S.stats,
+        domains: S.domains, entries: S.entries, links: S.links,
+        thinkers: S.thinkers.map((t) => ({ id: t.id, name: t.name, en: t.en, birth: t.birth, death: t.death, country: t.country, entries: t.entries.map((e) => e.id) })),
+        scenarios: S.scenarios, terms: S.terms,
+      };
+      return { name: "education-mind-atlas.json", mime: "application/json", text: JSON.stringify(data, null, 2) };
+    }
+    if (fmt === "entries-csv") {
+      return {
+        name: "entries.csv", mime: "text/csv",
+        text: csv(["id", "name", "en", "domain", "branch", "thinker", "year", "kind", "tagline"],
+          S.entries.map((e) => [e.id, e.name, e.en, e.domain, e.branch, S.thinkerName(e.thinker), e.year, e.kind, e.tagline])),
+      };
+    }
+    if (fmt === "links-csv") {
+      return {
+        name: "links.csv", mime: "text/csv",
+        text: csv(["a", "b", "type", "point", "confidence", "since"],
+          S.links.map((l) => [l.a, l.b, l.type, l.point, l.confidence, l.since])),
+      };
+    }
+    return null;
+  }
+
+  function downloadData(fmt) {
+    const exp = buildExport(fmt);
+    if (!exp) return;
+    const blob = new Blob([exp.text], { type: exp.mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = exp.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
   /* ---------------- 概览 ---------------- */
   function viewOverview() {
+    if (!state.audience) return viewLanding();
+    if (state.audience === "researcher") return viewResearch();
     const st = S.stats;
     const metrics = [
       [st.entries, "详解条目", ""],
@@ -902,6 +1143,14 @@
     const scForEntry = S.scenariosOfEntry[e.id] || [];
     const doiN = e.evidence.filter((x) => x.doi).length;
 
+    const citeUrl = location.origin + location.pathname + "#/entry/" + e.id;
+    const citeYear = typeof e.year === "number" ? String(e.year) : fmtYear(e.year);
+    const citeFormats = {
+      plain: `${e.name}（${S.thinkerName(e.thinker)}，${fmtYear(e.year)}）. 教育与心智知识图谱 v${A.meta.version}.`,
+      bibtex: `@misc{${e.id.toLowerCase()},\n  title = {${e.name}},\n  author = {${S.thinkerName(e.thinker)}},\n  year = {${citeYear}},\n  howpublished = {教育与心智知识图谱 v${A.meta.version}},\n  url = {${citeUrl}}\n}`,
+      ris: `TY  - CHAP\nTI  - ${e.name}\nAU  - ${S.thinkerName(e.thinker)}\nPY  - ${citeYear}\nUR  - ${citeUrl}\nER  -`,
+    };
+
     const aside = `
       <div class="aside-block">
         <h4>条目信息</h4>
@@ -985,8 +1234,11 @@
         <section class="dsection">
           <h2><span class="dot"></span>引用本条</h2>
           <div class="cite-box">
-            <code id="cite-text">${esc(e.name)}（${esc(S.thinkerName(e.thinker))}，${fmtYear(e.year)}）. 教育与心智知识图谱 v${esc(A.meta.version)}.</code>
-            <button class="btn ghost sm" id="copy-cite" type="button">复制</button>
+            ${state.audience === "researcher" ? `<div class="cite-formats">${[["plain", "中文"], ["bibtex", "BibTeX"], ["ris", "RIS"]].map(([v, l]) => `<button class="chip ${state.citeFmt === v ? "on" : ""}" data-cite-fmt="${v}">${l}</button>`).join("")}</div>` : ""}
+            <div class="cite-body">
+              <code id="cite-text" style="white-space:pre-wrap">${esc(citeFormats[state.citeFmt] || citeFormats.plain)}</code>
+              <button class="btn ghost sm" id="copy-cite" type="button">复制</button>
+            </div>
           </div>
         </section>
       </article>
@@ -1877,7 +2129,7 @@
       <div class="search-panel" role="dialog" aria-modal="true" aria-label="全局搜索">
         <div class="search-head">
           <span style="color:var(--ink-5)">⌕</span>
-          <input class="search-input" id="sr-input" placeholder="说说遇到的情况，如「孩子不肯写作业」…" autocomplete="off" />
+          <input class="search-input" id="sr-input" placeholder="${state.audience === "researcher" ? "输入关键词、作者、年份、DOI 或条目编号…" : "说说遇到的情况，如「孩子不肯写作业」…"}" autocomplete="off" />
           <span class="kbd">Esc</span>
         </div>
         <div class="search-facets">
@@ -1939,7 +2191,7 @@
     let inner = "";
     let crumb = "";
 
-    if (route === "") { inner = viewOverview(); crumb = '<span class="cur">概览</span>'; }
+    if (route === "") { inner = viewOverview(); crumb = '<span class="cur">' + (state.audience === "researcher" ? "研究索引" : state.audience ? "概览" : "开始") + '</span>'; }
     else if (route === "start") { active = "start"; inner = viewTriage(); crumb = '<span class="cur">快速分诊</span>'; }
     else if (route === "scenarios") {
       active = "scenarios";
@@ -2097,7 +2349,8 @@
     /* 身份切换 */
     document.querySelectorAll("[data-aud]").forEach((el) => {
       el.addEventListener("click", () => {
-        state.audience = el.dataset.aud;
+        const v = el.dataset.aud;
+        state.audience = state.audience === v ? "" : v;
         state.scAudience = "";
         localStorage.setItem("atlas-audience", state.audience);
         render();
@@ -2180,6 +2433,26 @@
       } else {
         copyBtn.textContent = "请手动选择";
       }
+    });
+
+    /* 引用格式切换（研究者） */
+    document.querySelectorAll("[data-cite-fmt]").forEach((el) => {
+      el.addEventListener("click", () => {
+        state.citeFmt = el.dataset.citeFmt;
+        render();
+      });
+    });
+
+    /* 学术检索（研究者工作台） */
+    const rinput = document.getElementById("research-input");
+    if (rinput) {
+      rinput.addEventListener("input", () => { state.researchQ = rinput.value; renderResearchResults(); });
+      renderResearchResults();
+    }
+
+    /* 数据下载（研究者工作台） */
+    document.querySelectorAll("[data-dl]").forEach((el) => {
+      el.addEventListener("click", () => downloadData(el.dataset.dl));
     });
 
     /* 阅读路径生成 */
