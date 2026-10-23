@@ -34,10 +34,10 @@
   --warn: oklch(55% 0.14 70);
   --warn-bg: oklch(95% 0.05 70);
 
-  /* 字体 */
-  --serif: "Fraunces", "Noto Serif SC", Georgia, serif;
-  --sans: "Spline Sans", "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "Spline Sans Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  /* 字体：优先网络字体，缺失时回落到各平台自带中文/西文字体 */
+  --serif: "Fraunces", "Noto Serif SC", Georgia, "Songti SC", "SimSun", serif;
+  --sans: "Spline Sans", "Noto Sans SC", system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --mono: "Spline Sans Mono", ui-monospace, "SF Mono", Consolas, "Courier New", monospace;
 
   /* 尺度 */
   --rail: 264px;

@@ -19,11 +19,17 @@
     })();
   </script>
 
+  <!-- 字体：非阻塞加载；即便字体不可达，也使用系统字体正常渲染 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Spline+Sans:wght@300;400;500;600&family=Spline+Sans+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap"
-    rel="stylesheet" />
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Spline+Sans:wght@300;400;500;600&family=Spline+Sans+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" />
+  </noscript>
 
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -31,7 +37,13 @@
   <a class="skip-link" href="#main">跳到正文</a>
   <div id="app"></div>
 
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="js/vendor/d3.v7.min.js"></script>
+  <script>
+    // 本地文件缺失时回退到 CDN，保证图谱仍可渲染
+    if (typeof d3 === "undefined") {
+      document.write('<script src="https://d3js.org/d3.v7.min.js"><\/script>');
+    }
+  </script>
   <script src="js/data/domains.js"></script>
   <script src="js/data/roster-1.js"></script>
   <script src="js/data/roster-2.js"></script>
