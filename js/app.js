@@ -13,6 +13,8 @@
     scAge: "",
     scAudience: "",
     triage: { age: "", concern: "", duration: "" },
+    sheetPick: [],
+    sheetInit: false,
     navOpen: false,
     filter: { domain: "", branch: "", kind: "" },
     tlDomain: "",
@@ -398,6 +400,17 @@
 
     const urgent = t.duration === "months" || t.duration === "impact";
 
+    /* 一页纸选择：默认选中最贴近的 3 条；改年龄或困扰时重新初始化 */
+    const resultIds = results.map((s) => s.id);
+    if (ready && !state.sheetInit) {
+      state.sheetInit = true;
+      state.sheetPick = resultIds.slice(0, 3);
+    }
+    state.sheetPick = state.sheetPick.filter((id) => resultIds.indexOf(id) > -1);
+    const picked = state.sheetPick.map((id) => S.scenarioById[id]).filter(Boolean);
+    const canSheet = picked.length >= 2;
+    const sheetHref = `#/handout?ids=${picked.map((s) => s.id).join(",")}&age=${encodeURIComponent(t.age)}&concern=${encodeURIComponent(t.concern)}`;
+
     const ageOpts = (tr.ages || []).map((a) => `<button class="triage-opt ${t.age === a.id ? "on" : ""}" data-tr="age" data-v="${a.id}">
       <b>${esc(a.name)}</b><small>${esc(a.hint)}</small></button>`).join("");
 
@@ -441,14 +454,40 @@
           ${urgent ? `<div class="sc-esc" style="margin-top:0.6rem"><span class="sc-k">先看这条</span>
             持续时间较长或已影响吃饭、睡觉、上学时，优先排除健康与情绪因素，并考虑联系学校心理老师、儿科或儿童心理专业人员。下面的做法可以同时进行，但不要替代评估。</div>` : ""}
           ${relaxed ? `<p class="graph-hint">该年龄段没有直接对应的情境，以下按「同类困扰」跨年龄推荐。</p>` : ""}
+          ${results.length >= 2 ? `<div class="pick-bar no-print">
+            <div class="pick-head">
+              <span class="sec-k">带走哪几条</span>
+              <span class="filter-meta">已选 ${picked.length} / 3 · 至少 2 条</span>
+            </div>
+            <div class="pick-chips">
+              ${results.map((s) => {
+                const idx = state.sheetPick.indexOf(s.id);
+                return `<button class="chip pick ${idx > -1 ? "on" : ""}" data-pick="${s.id}" aria-pressed="${idx > -1 ? "true" : "false"}">
+                  ${idx > -1 ? `<b>${idx + 1}</b>` : ""}${esc(s.title)}</button>`;
+              }).join("")}
+            </div>
+            <div class="pick-actions">
+              <span class="graph-hint">合并成一张 A4，家长会、家访或面谈时一次带走。</span>
+              ${canSheet
+                ? `<a class="btn primary sm" href="${sheetHref}">生成一页纸（A4）→</a>`
+                : `<span class="btn primary sm disabled" aria-disabled="true">生成一页纸（A4）</span>`}
+            </div>
+          </div>` : results.length === 1 ? `<div class="pick-bar no-print">
+            <p class="graph-hint">这一项当前只匹配到 1 条情境，无法合并；可以直接打印单条。</p>
+            <div class="pick-actions">
+              <a class="btn primary sm" href="#/scenario/${results[0].id}">打印这一条（A4）→</a>
+            </div>
+          </div>` : `<div class="pick-bar no-print"><p class="graph-hint">该困扰暂无可推荐的情境，换一个类别试试。</p></div>`}
           <div class="sc-list" style="margin-top:0.8rem">
-            ${results.map((s, i) => scenarioCard(s, i < 2)).join("")}
+            ${results.map((s, i) => scenarioCard(s, i < 2, state.sheetPick.indexOf(s.id) + 1)).join("")}
           </div>
           <div class="triage-actions">
             <a class="btn ghost sm" href="#/scenarios?age=${encodeURIComponent(t.age)}">看该年龄全部情境 →</a>
             <button class="btn ghost sm" data-tr="reset" data-v="all">重新选择</button>
           </div>
         </div>` : `<div class="triage-actions"><span class="graph-hint">选完前两项即可看到结果。</span></div>`}
+
+      <p class="triage-note"><b>一个判断说明</b>　分诊的 10 个类别和映射是按「家长 / 老师会怎么描述问题」做的编辑判断，不是研究结论。有些情境会同时出现在两类里（如「作业拖拉」既在注意力也在学习），这是有意的——同一个现象从不同入口都该能被找到。</p>
     </div>
     ${footHTML()}`;
   }
@@ -475,13 +514,14 @@
     </div>`;
   }
 
-  function scenarioCard(s, open) {
+  function scenarioCard(s, open, pickIndex) {
     const audTags = s.audience.map((a) => `<span class="badge">${a === "teacher" ? "给老师" : "给家长"}</span>`).join("");
     const entries = (s.links || []).map((id) => S.byId[id]).filter(Boolean);
     return `<details class="sc-card" ${open ? "open" : ""}>
       <summary>
         <span class="sc-title">${esc(s.title)}</span>
         <span class="sc-tags">
+          ${pickIndex ? `<span class="badge pick-on">已选 ${pickIndex}</span>` : ""}
           <span class="badge">${esc(AGE_NAME[s.age] || s.age)}</span>
           ${audTags}
           ${S.activities[s.id] && state.audience !== "parent" ? '<span class="badge derive">含课堂活动</span>' : ""}
@@ -622,6 +662,76 @@
       <footer class="sheet-foot">
         <p>本卡是对站内知识条目的编辑性综合，不构成诊断，也不能替代个别化评估。涉及发展与精神健康问题，请以专业人员意见为准。</p>
         <p>教育与心智知识图谱 v${esc(A.meta.version)} · ${esc(dateStr)} · ${esc(s.id)}</p>
+      </footer>
+    </article>`;
+  }
+
+  /* ---------------- 一页纸（2–3 条情境合并，A4） ---------------- */
+  function viewHandout(query) {
+    const rawIds = String(query.ids || "").split(",").map((x) => x.trim()).filter(Boolean);
+    const ids = rawIds.filter((id, i) => rawIds.indexOf(id) === i).slice(0, 3);
+    const list = ids.map((id) => S.scenarioById[id]).filter(Boolean);
+    if (!list.length) return notFound("没有可合并的情境");
+
+    const ageId = query.age || "";
+    const concern = (S.triage.concerns || []).find((c) => c.id === (query.concern || ""));
+    const today = new Date();
+    const dateStr = today.getFullYear() + " 年 " + (today.getMonth() + 1) + " 月 " + today.getDate() + " 日";
+    const countName = ["", "一件事", "两件事", "三件事"][list.length];
+    const audLabel = state.audience === "teacher" ? "给老师" : state.audience === "parent" ? "给家长" : "老师 / 家长";
+
+    /* 依据：合并去重后的机制条目 */
+    const refMap = {};
+    list.forEach((s) => (s.links || []).forEach((id) => { if (S.byId[id]) refMap[id] = S.byId[id]; }));
+    const refs = Object.keys(refMap).map((id) => refMap[id]);
+
+    return `
+    <div class="sheet-actions no-print">
+      <a class="back-link" href="#/start">← 返回分诊</a>
+      <div class="sheet-actions-right">
+        <span class="filter-meta">A4 · 单页 · 已合并 ${list.length} 条</span>
+        <button class="btn primary sm" id="sheet-print">打印 / 存为 PDF</button>
+      </div>
+    </div>
+    <article class="sheet-paper handout">
+      <header class="sheet-head">
+        <span class="sheet-kicker">教育与心智知识图谱 · 家校沟通一页纸</span>
+        <h1>带回去的${countName}</h1>
+        <div class="sheet-meta">
+          ${ageId ? `<span>${esc(AGE_NAME[ageId] || ageId)}</span>` : ""}
+          ${concern ? `<span>困扰：${esc(concern.name)}</span>` : ""}
+          <span>${esc(audLabel)}</span>
+          <span>${esc(dateStr)}</span>
+        </div>
+      </header>
+
+      <p class="handout-lead">这一页把与你描述最接近的 ${list.length} 个情境合在一起。不必按顺序做，先挑一条最容易开始的。</p>
+
+      ${list.map((s, i) => `
+      <section class="handout-item">
+        <h2 class="handout-h">
+          <span class="handout-num">${String(i + 1).padStart(2, "0")}</span>
+          <span>${esc(s.title)}</span>
+          <span class="handout-ev">证据：${esc((A.confidences[s.evidence] || {}).name || s.evidence)}</span>
+        </h2>
+        <p class="handout-signal"><b>你可能会看到</b>　${esc(s.signal)}</p>
+        <p class="handout-read"><b>可能不是你以为的那样</b>　${esc(s.read)}</p>
+        <div class="handout-row">
+          <div class="handout-col do"><h3>可以试</h3><ol>${s.do.map((x) => `<li>${esc(x)}</li>`).join("")}</ol></div>
+          <div class="handout-col dont"><h3>先别做</h3><ul>${s.dont.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+          <div class="handout-col say"><h3>可以这样说</h3><ul>${s.say.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+        </div>
+        ${s.escalate && s.escalate !== "—" ? `<p class="handout-esc"><b>何时找专业帮助</b>　${esc(s.escalate)}</p>` : ""}
+      </section>`).join("")}
+
+      ${refs.length ? `<section class="handout-refs">
+        <h2>依据</h2>
+        <p>${refs.map((e) => `<b>${esc(e.name)}</b>（${esc(S.thinkerName(e.thinker))}，${fmtYear(e.year)} · ${esc(e.id)}）`).join("；")}</p>
+      </section>` : ""}
+
+      <footer class="sheet-foot">
+        <p>本页是对站内知识条目的编辑性综合，不构成诊断，也不能替代个别化评估。涉及发展与精神健康问题，请以专业人员意见为准。</p>
+        <p>教育与心智知识图谱 v${esc(A.meta.version)} · ${esc(dateStr)} · 共 ${list.length} 条情境 · 单页</p>
       </footer>
     </article>`;
   }
@@ -1625,7 +1735,7 @@
         <h2><span class="dot"></span>面向谁</h2>
         <ul class="bullets">
           <li><b>老师</b>：按课堂情境进入场景库，每条给出可执行的课堂动作、先别做的事、可直接使用的课堂语言，以及转介建议；其中 ${st.activities} 条另配 5 分钟课堂活动脚本，可单独打印。</li>
-          <li><b>家长</b>：按孩子年龄进入，每条给出可能的解释、在家可以试的做法、先别做的事、可以对孩子说的话，以及何时该找专业帮助。</li>
+          <li><b>家长</b>：按孩子年龄进入，每条给出可能的解释、在家可以试的做法、先别做的事、可以对孩子说的话，以及何时该找专业帮助；可把 2–3 条合并打印成一张 A4，家长会、家访或面谈时一次带走。</li>
           <li><b>研究者与学生</b>：按领域与关联网络进入，可对比、寻路、查看证据分级与引用格式。</li>
         </ul>
         <p style="font-size:.92rem;color:var(--ink-3);line-height:1.8;margin-top:.6rem">场景库共 ${st.scenarios} 条，是对站内条目的<strong>编辑性综合</strong>，不是新的研究结论；每条都回链到机制条目，便于核对依据。它不构成诊断，也不能替代个别化评估。</p>
@@ -1843,6 +1953,11 @@
       inner = viewScenarioSheet(parts[1]);
       crumb = `<a href="#/scenarios">场景库</a><span class="sep">/</span><span class="cur">${esc(s ? s.title : "未找到")}</span>`;
     }
+    else if (route === "handout") {
+      active = "start";
+      inner = viewHandout(query);
+      crumb = `<a href="#/start">快速分诊</a><span class="sep">/</span><span class="cur">一页纸</span>`;
+    }
     else if (route === "entries") {
       active = "entries";
       if (query.domain) state.filter.domain = query.domain;
@@ -1949,19 +2064,33 @@
         if (k === "age") {
           state.triage.age = state.triage.age === v ? "" : v;
           if (!state.triage.age) state.triage.concern = "";
+          state.sheetPick = []; state.sheetInit = false;
         } else if (k === "concern") {
           state.triage.concern = state.triage.concern === v ? "" : v;
+          state.sheetPick = []; state.sheetInit = false;
         } else if (k === "duration") {
           state.triage.duration = state.triage.duration === v ? "" : v;
         } else if (k === "reset") {
           if (v === "concern") state.triage.concern = "";
           else state.triage = { age: "", concern: "", duration: "" };
+          state.sheetPick = []; state.sheetInit = false;
         }
         render();
         if (k === "concern" && state.triage.concern) {
           const el = document.querySelector(".triage-result");
           if (el) el.scrollIntoView({ block: "start", behavior: "smooth" });
         }
+      });
+    });
+
+    /* 一页纸：选择 2–3 条 */
+    document.querySelectorAll("[data-pick]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.dataset.pick;
+        const i = state.sheetPick.indexOf(id);
+        if (i > -1) state.sheetPick.splice(i, 1);
+        else if (state.sheetPick.length < 3) state.sheetPick.push(id);
+        render();
       });
     });
 
