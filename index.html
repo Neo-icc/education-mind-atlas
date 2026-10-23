@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>教育与心智 · 知识图谱</title>
+  <meta name="description" content="教育与心智知识图谱：五大领域 · 机制级关联 · 可核验来源。涵盖教育学基础、教育行为心理学、泛教育理论、儿童成长发展与脑科学与学习。" />
+  <meta name="color-scheme" content="light dark" />
+
+  <script>
+    // 首屏即确定主题，避免闪烁；用户显式选择优先，其次跟随系统
+    (function () {
+      var stored = null;
+      try { stored = localStorage.getItem("atlas-theme"); } catch (e) {}
+      var t = stored === "dark" || stored === "light"
+        ? stored
+        : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Spline+Sans:wght@300;400;500;600&family=Spline+Sans+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <div id="app"></div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="js/data/domains.js"></script>
+  <script src="js/data/roster-1.js"></script>
+  <script src="js/data/roster-2.js"></script>
+  <script src="js/data/roster-3.js"></script>
+  <script src="js/data/entries-d1.js"></script>
+  <script src="js/data/entries-d2.js"></script>
+  <script src="js/data/entries-d3.js"></script>
+  <script src="js/data/entries-d4.js"></script>
+  <script src="js/data/entries-d5.js"></script>
+  <script src="js/data/thinkers.js"></script>
+  <script src="js/data/scholars-extra.js"></script>
+  <script src="js/data/overrides.js"></script>
+  <script src="js/data/scenarios.js"></script>
+  <script src="js/data/activities.js"></script>
+  <script src="js/data/triage.js"></script>
+  <script src="js/data/connections-1.js"></script>
+  <script src="js/data/connections-2.js"></script>
+  <script src="js/data/connections-3.js"></script>
+  <script src="js/data/connections-4.js"></script>
+  <script src="js/data/dom-9-dev.js"></script>
+  <script src="js/data/dom-6-foundation.js"></script>
+  <script src="js/data/dom-7-psych.js"></script>
+  <script src="js/data/dom-8-broad.js"></script>
+  <script src="js/data/dom-10-brain.js"></script>
+  <script src="js/data/connections-5.js"></script>
+  <script src="js/data/connections-6.js"></script>
+  <script>
+    // 数据规范化：合并同一配对 + 同一类型的重复关联（保留首次出现）
+    (function () {
+      var seen = {}, out = [];
+      (window.ATLAS.links || []).forEach(function (l) {
+        var k = [l[0], l[1]].sort().join("|") + "|" + l[2];
+        if (!seen[k]) { seen[k] = 1; out.push(l); }
+      });
+      window.ATLAS.links = out;
+    })();
+  </script>
+  <script src="js/core.js?v=35"></script>
+  <script src="js/app.js?v=35"></script>
+</body>
+</html>

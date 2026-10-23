@@ -1,0 +1,73 @@
+/* ============================================================
+   学者库（补充）：新增条目涉及的学者
+   ============================================================ */
+window.ATLAS = window.ATLAS || {};
+
+Object.assign(ATLAS.scholars, {
+  /* 教育学基础 */
+  augustine: ["奥古斯丁", "Augustine of Hippo"], aquinas: ["托马斯·阿奎那", "Thomas Aquinas"],
+  vico: ["维柯", "Giambattista Vico"], humboldt: ["洪堡", "Wilhelm von Humboldt"],
+  newman: ["纽曼", "John Henry Newman"], jaspers: ["雅斯贝尔斯", "Karl Jaspers"],
+  whitehead: ["怀特海", "Alfred North Whitehead"], bobbitt: ["博比特", "Franklin Bobbitt"],
+  charters: ["查特斯", "W. W. Charters"], taba: ["塔巴", "Hilda Taba"],
+  goodson: ["古德森", "Ivor Goodson"], pinar: ["派纳", "William Pinar"],
+  van_manen: ["范梅南", "Max van Manen"], parkhurst: ["帕克赫斯特", "Helen Parkhurst"],
+  washburne: ["沃什伯恩", "Carleton Washburne"], kilpatrick: ["克伯屈", "William Kilpatrick"],
+  cast: ["CAST", "CAST"], engelmann: ["恩格尔曼", "Siegfried Engelmann"],
+  adler: ["阿德勒（Paideia）", "Mortimer Adler"], giroux: ["吉鲁", "Henry Giroux"],
+  bowles_gintis: ["鲍尔斯与金蒂斯", "Bowles & Gintis"], collins_r: ["柯林斯（文凭）", "Randall Collins"],
+  lareau: ["拉鲁", "Annette Lareau"], friedman: ["弗里德曼", "Milton Friedman"],
+  edmonds: ["埃德蒙兹", "Ronald Edmonds"], caldwell: ["考德威尔", "Brian Caldwell"],
+  hanushek: ["汉纳谢克", "Eric Hanushek"], spearman: ["斯皮尔曼", "Charles Spearman"],
+  rasch: ["拉施（测量）", "Georg Rasch"], angoff: ["安戈夫", "William Angoff"],
+  kolen: ["科伦", "Michael Kolen"],
+  /* 教育行为心理学 */
+  miller_n: ["米勒（冲突）", "Neal Miller"], sugai: ["杉井", "George Sugai"],
+  murdock: ["默多克", "Bennet Murdock"], craik: ["克雷克", "Fergus Craik"],
+  kahneman: ["卡尼曼", "Daniel Kahneman"], rumelhart: ["鲁梅尔哈特", "David Rumelhart"],
+  newell: ["纽厄尔", "Allen Newell"], chase: ["蔡斯", "William Chase"],
+  spiro: ["斯皮罗", "Rand Spiro"], scardamalia: ["斯卡达玛利亚", "Marlene Scardamalia"],
+  covington: ["科温顿", "Martin Covington"], seligman: ["塞利格曼", "Martin Seligman"],
+  rotter: ["罗特", "Julian Rotter"], lepper: ["莱珀", "Mark Lepper"],
+  locke_e: ["洛克（目标）", "Edwin Locke"], pekrun: ["佩克伦", "Reinhard Pekrun"],
+  miller_w: ["米勒（动机访谈）", "William Miller"], underwood: ["安德伍德", "Benton Underwood"],
+  bjork: ["比约克", "Robert Bjork"], rohrer: ["罗雷尔", "Doug Rohrer"],
+  koriat: ["科里亚特", "Asher Koriat"], nelson_t: ["纳尔逊", "Thomas Nelson"],
+  risko: ["里斯科", "Evan Risko"], steel: ["斯蒂尔", "Piers Steel"],
+  bangert_drowns: ["班格特-德劳斯", "Bangert-Drowns"], branch: ["布兰奇", "Robert Branch"],
+  rose_d: ["罗斯", "David Rose"], mazur: ["马祖尔", "Eric Mazur"],
+  /* 泛教育 */
+  baltes: ["巴尔特斯", "Paul Baltes"], linn: ["林恩", "Marcia Linn"],
+  gentner: ["金特纳", "Dedre Gentner"], corcoran: ["科克伦", "Tom Corcoran"],
+  andriessen: ["安德里森", "Jerry Andriessen"], graesser: ["格雷瑟", "Arthur Graesser"],
+  buckingham: ["白金汉", "David Buckingham"], phillips_d: ["菲利普斯", "David Phillips"],
+  lingard: ["林加德", "Bob Lingard"], dryden_peterson: ["德莱登-彼得森", "Sarah Dryden-Peterson"],
+  hargreaves: ["哈格里夫斯", "Andy Hargreaves"], spillane: ["斯皮兰", "James Spillane"],
+  skilbeck: ["斯基尔贝克", "Malcolm Skilbeck"], warschauer: ["沃肖尔", "Mark Warschauer"],
+  /* 儿童发展 */
+  wimmer: ["维默", "Heinz Wimmer"], thelen: ["西伦", "Esther Thelen"],
+  gelman: ["格尔曼", "Rochel Gelman"], gathercole: ["盖瑟科尔", "Susan Gathercole"],
+  harris_j: ["哈里斯", "Judith Rich Harris"], eagly: ["伊格利", "Alice Eagly"],
+  mclean: ["麦克莱恩", "Kate McLean"], arnett: ["阿内特", "Jeffrey Arnett"],
+  blasi: ["布拉西", "Augusto Blasi"], zehr: ["泽尔", "Howard Zehr"],
+  carey: ["凯里", "Susan Carey"], brown_r: ["布朗（句法）", "Roger Brown"],
+  hart_risley: ["哈特与里斯利", "Hart & Risley"], baker_c: ["贝克", "Colin Baker"],
+  gough: ["高夫", "Philip Gough"], denham: ["德纳姆", "Susanne Denham"],
+  crick: ["克里克", "Nicki Crick"], rothbart: ["罗斯巴特", "Mary Rothbart"],
+  eisenberger: ["艾森伯格（社会排斥）", "Naomi Eisenberger"], durlak: ["杜拉克", "Joseph Durlak"],
+  baum: ["鲍姆", "Susan Baum"], conger: ["康格", "Rand Conger"],
+  /* 脑科学 */
+  greenough: ["格里诺", "William Greenough"], hentsch: ["亨施", "Takao Hensch"],
+  schlaug: ["施劳格", "Gottfried Schlaug"], tononi: ["托诺尼", "Giulio Tononi"],
+  doyon: ["多永", "Julien Doyon"], rizzolatti: ["里佐拉蒂", "Giacomo Rizzolatti"],
+  raichle: ["赖克尔", "Marcus Raichle"], schacter: ["沙克特", "Daniel Schacter"],
+  roenneberg: ["伦内伯格", "Till Roenneberg"], mednick: ["梅德尼克", "Sara Mednick"],
+  anderson_m: ["安德森（抑制）", "Michael Anderson"], loftus: ["洛夫特斯", "Elizabeth Loftus"],
+  broadbent: ["布罗德本特", "Donald Broadbent"], lavie: ["拉维", "Nilli Lavie"],
+  sonuga_barke: ["索努加-巴克", "Edmund Sonuga-Barke"], christoff: ["克里斯托夫", "Kalina Christoff"],
+  barrett: ["巴雷特", "Lisa Feldman Barrett"], yerkes: ["耶克斯", "Robert Yerkes"],
+  galvan: ["加尔万", "Adriana Galván"], singer: ["辛格", "Tania Singer"],
+  kuhl: ["库尔", "Patricia Kuhl"], friederici: ["弗里德里奇", "Angela Friederici"],
+  patel: ["帕特尔", "Aniruddh Patel"], ansari: ["安萨里", "Daniel Ansari"],
+  bowers: ["鲍尔斯（神经）", "Jeffrey Bowers"]
+});
