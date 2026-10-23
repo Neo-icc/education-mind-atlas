@@ -69,9 +69,11 @@ npx serve .
 ```
 index.html                 入口，按顺序加载数据与脚本
 css/styles.css             设计令牌与全部样式（含双主题、打印样式）
+css/fonts.css              本地西文字体的 @font-face（latin 子集）
 js/core.js                 数据规范化、索引、检索、图算法、一致性自检
 js/app.js                  路由、视图、交互
 js/vendor/d3.v7.min.js     本地化的 D3（无外部依赖）
+js/vendor/fonts/*.woff2    本地西文字体（Fraunces / Spline Sans / Spline Sans Mono）
 js/data/
   domains.js               领域与分支、关联类型、证据分级
   roster-1~3.js            条目花名册（id / 名称 / 分支 / 人物 / 年代）
@@ -85,6 +87,14 @@ js/data/
   activities.js            5 分钟课堂活动
   triage.js                快速分诊的年龄 / 困扰 / 持续时间
 ```
+
+### 字体与外部依赖
+
+- **西文与标题字体**：Fraunces / Spline Sans / Spline Sans Mono 已本地化到 `js/vendor/fonts/`，只保留 latin 子集，随页面一起加载。
+- **中文字体**：默认使用系统字体（思源 / 宋体 / PingFang / 微软雅黑），同时以非阻塞方式尝试加载 Noto Serif SC 与 Noto Sans SC。加不上只会导致字形差异，不影响布局与功能。
+- **D3**：本地化到 `js/vendor/`，CDN 仅作为兜底。
+
+除中文字体这一项渐进增强外，页面不依赖任何外部资源。
 
 ## 数据模型
 
