@@ -10,11 +10,20 @@
 
   /* ---------- 规范化条目 ---------- */
   const renames = (A.overrides && A.overrides.renames) || {};
+  const doiMap = A.dois || {};
+
+  /* 证据文本是否指向可定位的单篇作品（书名号、英文多词标题、期刊/出版社标记） */
+  function hasWorkTitle(t) {
+    return /《[^》]+》/.test(t) ||
+      /[A-Za-z]{3,}([\s,&-]+[A-Za-z]{2,}){2,}/.test(t) ||
+      /(Journal|Review|Press|学报|期刊|出版社|杂志)/.test(t);
+  }
 
   const entries = (A.roster || []).map((r) => {
     const [id, rawName, en, domain, branch, thinker, year, kind, tagline] = r;
     const name = renames[id] || rawName;
     const d = details[id] || {};
+    const mapped = doiMap[id] || [];
     return {
       id, name, en, domain, branch, thinker, year,
       kind: kind || "theory", tagline: tagline || "",
@@ -22,7 +31,7 @@
       claims: d.claims || [],
       agreements: d.agreements || [],
       disagreements: d.disagreements || [],
-      evidence: d.evidence || [],
+      evidence: (d.evidence || []).map((ev, i) => (mapped[i] ? Object.assign({}, ev, { doi: mapped[i] }) : ev)),
       applications: d.applications || [],
       terms: d.terms || [],
       _detail: !!details[id],
@@ -153,6 +162,12 @@
     byConfidence: {},
     scenarios: scenarios.length,
     activities: Object.keys(A.activities || {}).length,
+    doiItems: entries.reduce((n, e) => n + e.evidence.filter((x) => x.doi).length, 0),
+    entriesWithDoi: entries.filter((e) => e.evidence.some((x) => x.doi)).length,
+    evidenceItems: entries.reduce((n, e) => n + e.evidence.length, 0),
+    evidenceRefs: entries.reduce((n, e) => n + e.evidence.filter((x) => !x.doi && hasWorkTitle(x.text)).length, 0),
+    evidenceTraces: entries.reduce((n, e) => n + e.evidence.filter((x) => !x.doi && !hasWorkTitle(x.text) && /\d{4}/.test(x.text)).length, 0),
+    evidenceReviews: entries.reduce((n, e) => n + e.evidence.filter((x) => !x.doi && !hasWorkTitle(x.text) && !/\d{4}/.test(x.text)).length, 0),
     yearRange: [Math.min.apply(null, entries.map((e) => e.year)), Math.max.apply(null, entries.map((e) => e.year))],
   };
   links.forEach((l) => { stats.byConfidence[l.confidence] = (stats.byConfidence[l.confidence] || 0) + 1; });

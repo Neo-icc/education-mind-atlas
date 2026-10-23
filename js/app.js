@@ -758,11 +758,30 @@
       </div>`;
     }).join("");
 
-    const evidence = e.evidence.map((ev, i) => `<div class="ev-item">
-      <span class="ev-k">${String(i + 1).padStart(2, "0")}</span>
-      <span>${esc(ev.text)}</span>
-      ${ev.doi ? `<a class="doi" href="https://doi.org/${esc(ev.doi)}" target="_blank" rel="noopener">DOI ↗</a>` : ""}
-    </div>`).join("");
+    const hasWork = (t) => /《[^》]+》/.test(t) || /[A-Za-z]{3,}([\s,&-]+[A-Za-z]{2,}){2,}/.test(t) || /(Journal|Review|Press|学报|期刊|出版社|杂志)/.test(t);
+    const evTier = (ev) => (ev.doi ? "doi" : hasWork(ev.text) ? "ref" : (/\d{4}/.test(ev.text) ? "trace" : "review"));
+    const TIER_LABEL = { ref: "有出处", trace: "作者 + 年份", review: "综述" };
+    const TIER_TIP = {
+      ref: "标注了具体作品（书名号、英文标题或期刊名），可据此定位",
+      trace: "标注了作者与年份，但未指向具体作品",
+      review: "概括性表述，未指向单一原始文献",
+    };
+    const tierCounts = { doi: 0, ref: 0, trace: 0, review: 0 };
+    e.evidence.forEach((ev) => { tierCounts[evTier(ev)] += 1; });
+    const evLegend = [["doi", "DOI 可直达"], ["ref", "有明确出处"], ["trace", "仅作者与年份"], ["review", "综述"]]
+      .filter(([k]) => tierCounts[k])
+      .map(([k, label]) => `<span class="dot-mark ${k}"></span>${label} ${tierCounts[k]}`)
+      .join("　");
+    const evidence = e.evidence.map((ev, i) => {
+      const tier = evTier(ev);
+      return `<div class="ev-item t-${tier}">
+        <span class="ev-k">${String(i + 1).padStart(2, "0")}</span>
+        <span>${esc(ev.text)}</span>
+        ${ev.doi
+          ? `<a class="doi" href="https://doi.org/${esc(ev.doi)}" target="_blank" rel="noopener">DOI ↗</a>`
+          : `<span class="ev-tier" title="${TIER_TIP[tier]}">${TIER_LABEL[tier]}</span>`}
+      </div>`;
+    }).join("");
 
     const terms = e.terms.map((t) => `<div class="term">
       <div><span class="t">${esc(t.t)}</span><span class="te">${esc(t.en)}</span></div>
@@ -771,6 +790,7 @@
 
     const appLabel = state.audience === "teacher" ? "课堂可以试" : state.audience === "parent" ? "在家可以试" : "教育应用";
     const scForEntry = S.scenariosOfEntry[e.id] || [];
+    const doiN = e.evidence.filter((x) => x.doi).length;
 
     const aside = `
       <div class="aside-block">
@@ -806,6 +826,7 @@
             ${relByType.agreement.length ? `<span class="badge agree">共识 ${relByType.agreement.length}</span>` : ""}
             ${relByType.disagreement.length ? `<span class="badge disagree">分歧 ${relByType.disagreement.length}</span>` : ""}
             ${relByType.derivative.length ? `<span class="badge derive">衍生 ${relByType.derivative.length}</span>` : ""}
+            ${doiN ? `<span class="badge derive">来源可直达 ${doiN}</span>` : ""}
           </div>
           <h1 class="detail-title">${esc(e.name)}</h1>
           <div class="detail-en">${esc(e.en)}</div>
@@ -838,6 +859,7 @@
           ${disagreements}</section>` : ""}
 
         ${e.evidence.length ? `<section class="dsection"><h2><span class="dot"></span>实证与来源<span class="hcount">${e.evidence.length}</span></h2>
+          <p class="ev-legend">${evLegend}</p>
           <div class="evidence">${evidence}</div></section>` : ""}
 
         ${e.applications.length ? `<section class="dsection"><h2><span class="dot"></span>${esc(appLabel)}<span class="hcount">${e.applications.length}</span></h2>
@@ -1512,6 +1534,19 @@
     </section>
 
     <section class="sec">
+      <div class="sec-head"><span class="sec-k">Citations · 引用可核验性</span><span class="filter-meta">经 Crossref 逐条比对</span></div>
+      <div class="aside-block">
+        <div class="aside-row"><span>证据条目总数</span><b>${st.evidenceItems}</b></div>
+        <div class="aside-row"><span>DOI 可直达</span><b>${st.doiItems}（${(st.doiItems / st.evidenceItems * 100).toFixed(1)}%）</b></div>
+        <div class="aside-row"><span>有明确出处（书名 / 期刊 / 标题）</span><b>${st.evidenceRefs}</b></div>
+        <div class="aside-row"><span>仅作者与年份</span><b>${st.evidenceTraces}</b></div>
+        <div class="aside-row"><span>综述性表述</span><b>${st.evidenceReviews}</b></div>
+        <div class="aside-row"><span>含 DOI 的条目</span><b>${st.entriesWithDoi} / ${st.entries}</b></div>
+      </div>
+      <p class="graph-hint">DOI 由 Crossref API 按「标题相似度 ≥ 0.8 且年份相差 ≤ 2 年」匹配，匹配不上的位置留空，不做猜测性补全。</p>
+    </section>
+
+    <section class="sec">
       <div class="sec-head"><span class="sec-k">Scenarios · 场景与课堂活动</span></div>
       <div class="aside-block">
         <div class="aside-row"><span>情境数</span><b>${st.scenarios}</b></div>
@@ -1631,7 +1666,7 @@
         <h2><span class="dot"></span>已知限制</h2>
         <ul class="bullets">
           <li><b>不是系统综述</b>：条目为综述性整理，用于定位与入门，不能替代原始文献与元分析。</li>
-          <li><b>来源以经典著作为主</b>：DOI 仅在高置信时标注，多数条目给出著作与研究年份而非链接。</li>
+          <li><b>来源可核验但未穷尽</b>：${st.evidenceItems} 条证据中，${st.doiItems} 条给出经 Crossref 核验的 DOI（${(st.doiItems / st.evidenceItems * 100).toFixed(1)}%），覆盖 ${st.entriesWithDoi} 个条目；${st.evidenceRefs} 条标注了可定位的作品名，${st.evidenceTraces} 条只有作者与年份。匹配不上 DOI 的一律留空，不做猜测性补全。</li>
           <li><b>机制到教学需中介</b>：脑科学条目的应用建议均经认知与课堂研究转译，不做神经还原式推论。</li>
           <li><b>覆盖不均衡</b>：以英语学界与中文可及文献为主，非西方传统与本土研究收录有限。</li>
           <li><b>关联存在取舍</b>：${st.links} 条关联是选择的结果，未收录的关系不代表不存在。</li>

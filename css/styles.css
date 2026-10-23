@@ -1071,6 +1071,36 @@ h1.page-title {
   align-self: center;
 }
 .ev-item .doi:hover { text-decoration: underline; }
+.ev-item .ev-tier {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-5);
+  white-space: nowrap;
+  align-self: center;
+  opacity: 0.8;
+}
+.ev-item.t-doi .ev-k { color: var(--derive); }
+.ev-legend {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-5);
+  margin: -0.2rem 0 0.7rem;
+}
+.ev-legend .dot-mark {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin: 0 0.32rem 0 0.7rem;
+  vertical-align: 1px;
+}
+.ev-legend .dot-mark:first-child { margin-left: 0; }
+.dot-mark.doi { background: var(--derive); }
+.dot-mark.ref { background: var(--ink-4); }
+.dot-mark.trace { background: var(--ink-5); opacity: 0.55; }
+.dot-mark.review { background: var(--rule-2); }
 
 /* 术语卡 */
 .term-grid {
