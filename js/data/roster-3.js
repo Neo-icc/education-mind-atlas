@@ -56,7 +56,7 @@ ATLAS.roster = (ATLAS.roster || []).concat([
 ["E226","空间能力与 STEM","Spatial Ability and STEM","brain","math-brain","uttal",2013,"mechanism","空间可视化能力预测 STEM 成就，且可通过训练提升并部分迁移。"],
 /* ── 脑科学 · 神经迷思与转化边界（6） ── */
 ["E227","左右脑分工迷思","The Left-Brain / Right-Brain Myth","brain","neuromyth","gazzaniga",1967,"critique","裂脑研究显示分工存在于特定加工，但「左脑人/右脑人」的学习主张无依据。"],
-["E228","「10% 大脑」迷思","The 10% Brain Myth","brain","neuromyth","howard_jones",1907,"critique","几乎全部脑区在日常活动中都被使用，「只用了 10%」是长期误传。"],
+["E228","「10% 大脑」迷思","The 10% Brain Myth","brain","neuromyth","howard_jones",2014,"critique","几乎全部脑区在日常活动中都被使用，「只用了 10%」是长期误传。"],
 ["E229","关键期绝对化迷思","The Absolute Critical Period Myth","brain","neuromyth","goswami",2006,"critique","把敏感期简化为「错过即永久失败」，会误导早教投资与对后期干预的放弃。"],
 ["E230","脑训练与健脑游戏宣称","Brain Training Claims","brain","neuromyth","owen",2010,"critique","商业脑训练多只能提升训练任务本身，对学业与日常认知的迁移证据不足。"],
 ["E231","神经迷思在教师中的流行","Neuromyths Among Teachers","brain","neuromyth","dekker",2012,"critique","大量教师相信学习风格、左右脑等迷思，说明「神经」话语易被误用为权威。"],

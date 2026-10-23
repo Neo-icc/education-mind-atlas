@@ -36,6 +36,7 @@ Object.assign(ATLAS.scholars, {
   risko: ["里斯科", "Evan Risko"], steel: ["斯蒂尔", "Piers Steel"],
   bangert_drowns: ["班格特-德劳斯", "Bangert-Drowns"], branch: ["布兰奇", "Robert Branch"],
   rose_d: ["罗斯", "David Rose"], mazur: ["马祖尔", "Eric Mazur"],
+  novak_g: ["诺瓦克（JiTT）", "Gregor Novak"],
   /* 泛教育 */
   baltes: ["巴尔特斯", "Paul Baltes"], linn: ["林恩", "Marcia Linn"],
   gentner: ["金特纳", "Dedre Gentner"], corcoran: ["科克伦", "Tom Corcoran"],

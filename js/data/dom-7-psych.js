@@ -53,7 +53,7 @@ ATLAS.roster = (ATLAS.roster || []).concat([
 ["E308","掌握学习的反馈—矫正循环","Feedback-Corrective Loop in Mastery Learning","psych","instruction","bloom",1971,"practice","以形成性测验定位未掌握点，提供替代教学与额外时间，循环至达标。"],
 ["E309","教学系统设计 ADDIE","ADDIE Instructional Design","psych","instruction","branch",2009,"practice","分析、设计、开发、实施、评价五阶段迭代推进，评价贯穿全流程。"],
 ["E310","通用学习设计的三个原则","Three Principles of UDL","psych","instruction","rose_d",2002,"practice","从设计之初提供多种表征、多种行动表达与多种参与方式，消除课程制造的障碍。"],
-["E311","及时教学法","Just-in-Time Teaching","psych","instruction","mazur",1997,"practice","课前在线预习题暴露困难，教师据此调整课堂重点，以学生的真实问题启动教学。"],
+["E311","及时教学法","Just-in-Time Teaching","psych","instruction","novak_g",1999,"practice","课前在线预习题暴露困难，教师据此调整课堂重点，以学生的真实问题启动教学。"],
 ["E312","同伴教学法","Peer Instruction","psych","instruction","mazur",1997,"practice","概念测验—同伴讨论—再次作答的循环，以论证与即时反馈替代部分讲授。"],
 ["E313","认知学徒制的四成分","Four Components of Cognitive Apprenticeship","psych","instruction","collins",2006,"practice","内容、方法、序列与社会性四成分组合，使专家思维可见、可练、可移交。"],
 ["E314","支架的渐隐与移交","Scaffold Fading and Transfer","psych","instruction","wood_b",1976,"practice","支架须校准于最近发展区并随能力增长撤除，把任务控制权逐步交给学习者。"],
@@ -1518,12 +1518,11 @@ ATLAS.details = Object.assign(ATLAS.details || {}, {
       "与激活先备知识一致：预习为新课提供认知锚点。"
     ],
     disagreements: [
-      { topic: "课前自学是否适合所有学生", sides: [ { who: "mazur", view: "课前预习配合课堂互动能显著提升概念理解与参与" }, { who: "rosenshine", view: "先备知识薄弱的学生难以从无指导的阅读中获益，可能带着误解进入课堂" } ], stake: "课前自学应作为常规，还是需先教授阅读与自学策略。" },
-      { topic: "预习的流畅感是否等于学会", sides: [ { who: "mazur", view: "预习后的课堂检验能暴露并纠正误解" }, { who: "bjork", view: "阅读产生的流畅感常被误判为掌握，若不配合检索与反馈，预习效果有限" } ], stake: "课前任务应侧重阅读还是侧重检索与自测。" }
+      { topic: "课前自学是否适合所有学生", sides: [ { who: "novak_g", view: "课前预习配合课堂互动能显著提升概念理解与参与" }, { who: "rosenshine", view: "先备知识薄弱的学生难以从无指导的阅读中获益，可能带着误解进入课堂" } ], stake: "课前自学应作为常规，还是需先教授阅读与自学策略。" },
+      { topic: "预习的流畅感是否等于学会", sides: [ { who: "novak_g", view: "预习后的课堂检验能暴露并纠正误解" }, { who: "bjork", view: "阅读产生的流畅感常被误判为掌握，若不配合检索与反馈，预习效果有限" } ], stake: "课前任务应侧重阅读还是侧重检索与自测。" }
     ],
     evidence: [
       { text: "Novak, Patterson, Gavrin & Christian, Just-in-Time Teaching: Blending Active Learning with Web Technology (1999)", doi: null },
-      { text: "Mazur, Peer Instruction: A User's Manual (1997)", doi: null },
       { text: "Marrs & Novak, Just-in-Time Teaching in Biology (2004)", doi: null }
     ],
     applications: [

@@ -49,7 +49,7 @@ ATLAS.roster = (ATLAS.roster || []).concat([
 ["E138","皮亚杰认知发展阶段","Piaget's Stages of Cognitive Development","dev","cog-dev","piaget",1952,"theory","感知运动、前运算、具体运算、形式运算四阶段，以质变方式重组认知结构。"],
 ["E139","新皮亚杰主义","Neo-Piagetian Theory","dev","cog-dev","case",1985,"theory","保留阶段思想，但以工作记忆容量与加工效率的增长解释阶段跃迁。"],
 ["E140","信息加工发展观","Information Processing View of Development","dev","cog-dev","siegler",1996,"theory","发展是策略库的变异与选择过程，儿童同时拥有多种策略并依效率取舍。"],
-["E141","维果茨基发展观","Vygotskian Developmental View","dev","cog-dev","vygotsky",1978,"theory","发展由社会互动与文化工具驱动，教学可以走在发展前面并引领发展。"],
+["E141","维果茨基发展观","Vygotskian Developmental View","dev","cog-dev","vygotsky",1934,"theory","发展由社会互动与文化工具驱动，教学可以走在发展前面并引领发展。"],
 ["E142","心理理论","Theory of Mind","dev","cog-dev","wellman",1990,"construct","理解他人拥有与自己不同的信念与欲望，并按信念而非现实预测行为。"],
 ["E143","执行功能发展","Development of Executive Function","dev","cog-dev","diamond",2006,"construct","抑制、工作记忆与认知灵活性的发展贯穿童年，并强预测学业与社会适应。"],
 ["E144","婴儿核心知识","Infant Core Knowledge","dev","cog-dev","spelke",2000,"theory","婴儿先天具备关于客体、数量、空间与主体的核心系统，学习在其上建构。"],
